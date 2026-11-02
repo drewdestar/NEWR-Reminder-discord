@@ -5,9 +5,12 @@ Optional: DB_PATH.
 Run:  bash ../ops/run-newr-reminder.sh   (or: pip install -r requirements.txt && python3 bot.py)
 
 Slash commands ONLY: command_prefix=None, help_command=None, and no
-on_message handler anywhere in this bot. Every feature is a discord
+on_message handler anywhere in this bot. Every command is a discord
 app_commands slash command, guild-synced to NEWR LABS on ready.
 There are no prefix commands (!remind etc.) and no plain-chat triggers.
+Two non-command extras exist: Snooze buttons on delivered reminders
+(cogs/dispatcher.py) and a ⏰-reaction listener that creates a DM
+reminder (also cogs/dispatcher.py); neither is a command.
 """
 from __future__ import annotations
 
@@ -68,6 +71,8 @@ class ReminderBot(commands.Bot):
         intents.members = True  # needed for the staff role/permission gate
         intents.messages = True
         intents.dm_messages = True  # needed for /remind_dm delivery
+        intents.reactions = True  # needed for the ⏰-reaction reminder
+        intents.guild_scheduled_events = True  # needed for /schedule_event
         # Slash commands only: no prefix, no help command, no on_message.
         super().__init__(command_prefix=None, intents=intents, help_command=None,
                          **_proxy_kwargs())
